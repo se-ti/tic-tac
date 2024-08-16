@@ -1,13 +1,34 @@
 <html>
 <head>
+<title>Modified tic-tac-toe</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
+html, body { height: 100%; margin: 0; } 
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.header, .footer {
+    overflow-x: hidden;		
+    flex-grow: 0;
+}
+
+.content {
+    overflow: auto;
+    flex: 1;
+}
 
 body {font-family: arial, sans-serif;}
-.container {width: 184px; background-color: #fff;}
+.container { margin: 0 auto; }
+.content { margin: 1ex; }
+.footer { margin: .5ex 1ex; text-align: end; }
+
+.container {width: 244px;}
 .fld { border-collapse: collapse; }
 
-.fld td { width: 60px; height: 60px; border: 1px solid grey; cursor: pointer;}
+.fld td { width: 80px; height: 80px; border: 1px solid grey; cursor: pointer;}
 
 .fld td.red {background-color: #faa; }
 .fld td.green {background-color: #afa; }
@@ -15,7 +36,8 @@ body {font-family: arial, sans-serif;}
 
 button { font-size: 125%; margin: 1ex auto; display: block; padding: 0.3ex 0.9ex;}
 .res {font-size: 150%; margin: 1.5ex auto; text-align: center; }
-.copy {font-size: 85%; position: absolute; bottom: 0; right: 0; z-index: -1; padding: 0 10px 5px 0;}
+.copy {font-size: 85%; }
+
 
 @media (width <= 480px) {
   .container {width: 100%; }	
@@ -27,29 +49,27 @@ button { font-size: 125%; margin: 1ex auto; display: block; padding: 0.3ex 0.9ex
 <body>
 
 <div class="container">
-<table class="fld" id='root'>
-	<tr><td></td><td></td><td></td></tr>
-	<tr><td></td><td></td><td></td></tr>
-	<tr><td></td><td></td><td></td></tr>
-</table>
+<div class="content">
+	<table class="fld">
+		<tr><td></td><td></td><td></td></tr>
+		<tr><td></td><td></td><td></td></tr>
+		<tr><td></td><td></td><td></td></tr>
+	</table>
 
-<button action="action" disabled>Reset</button>
+	<button action="action" disabled>Reset</button>
 
-<div class="res"></div>
+	<div class="res"></div>
 </div>
-<span class="copy">by @<a href="https://t.me/serge_ttv">serge_ttv</a></span>
-<div></div>
+
+<div class="footer"><span class="copy">by @<a href="https://t.me/serge_ttv">serge_ttv</a></span></div>
+</div>
 </body>
+
 <script>
-
-function $get(id) {
-	return document.getElementById(id);
-}
-
 (function() 
 {
 	let it = 0;
-        const prev = [];
+    const prev = [];
 	function click(e) 
 	{
 		if (it == -1)
@@ -73,7 +93,7 @@ function $get(id) {
 		btn().disabled = false;
 
 		testWin();
-        }
+    }
 
 	function testWin()
 	{
@@ -89,9 +109,7 @@ function $get(id) {
 		const el = document.querySelector('.res');
 		el.innerHTML = msg;
 		el.style.display = 'block';
-		//window.setTimeout(() => alert(msg), 1);
 	}
-
 
 	function testSeq(seq)
 	{		
@@ -113,7 +131,7 @@ function $get(id) {
 		it = 0;
 		for (i = prev.length - 1; i >= 0; i--) 
 		{
-		        prev[0].classList.remove('red', 'green', 'pale');
+            prev[0].classList.remove('red', 'green', 'pale');
 			prev.shift();
 		}
 
@@ -126,7 +144,7 @@ function $get(id) {
 		return document.querySelector('button');
 	}
         
-	$get('root').addEventListener('click', click);
+	document.querySelector('table.fld').addEventListener('click', click);
 	btn().addEventListener('click', reset);
 }) ();
 
