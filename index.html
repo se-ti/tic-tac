@@ -11,7 +11,7 @@ html, body { height: 100%; margin: 0; }
 }
 
 .header, .footer {
-    overflow-x: hidden;		
+    overflow-x: hidden;        
     flex-grow: 0;
 }
 
@@ -35,13 +35,21 @@ body { font-family: arial, sans-serif; }
 .fld td.pale { opacity: 0.45; }
 /*.fld td.win {outline: 3px solid coral; outline-offset: -1px; } */
 
-button { font-size: 125%; margin: 1ex auto; display: block; padding: 0.3ex 0.9ex; }
+.btn { margin: 1ex 0;  text-align: center; }
+.btn button { font-size: 125%;  padding: 0.3ex 0.9ex; }
+
+button.glyph { vertical-align: bottom; padding: 0.28ex; }
+button.glyph.undo span { display: block; width: 24px; height: 24px; background-color: buttontext; mask: center no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath d='M18.885 3.515c-4.617-4.618-12.056-4.676-16.756-.195l-2.129-2.258v7.938h7.484l-2.066-2.191c2.82-2.706 7.297-2.676 10.073.1 4.341 4.341 1.737 12.291-5.491 12.291v4.8c3.708 0 6.614-1.244 8.885-3.515 4.686-4.686 4.686-12.284 0-16.97z'/%3E%3C/svg%3E"); }
+button.undo { margin-right: .75ex; }
+
+button.glyph:disabled span { background-color: rgba(16,16, 16, 0.3); }
+
 .res { font-size: 150%; margin: 1.5ex auto; text-align: center; }
 .copy { font-size: 85%; }
 
 
 @media (width <= 480px) {
-  .container { width: 100%; }	
+  .container { width: 100%; }    
   .fld td { width: 33vw; height: 33vw; }
 }
 
@@ -61,15 +69,15 @@ button { font-size: 125%; margin: 1ex auto; display: block; padding: 0.3ex 0.9ex
 
 <div class="container">
 <div class="content">
-	<table class="fld">
-		<tr><td></td><td></td><td></td></tr>
-		<tr><td></td><td></td><td></td></tr>
-		<tr><td></td><td></td><td></td></tr>
-	</table>
+    <table class="fld">
+        <tr><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td></tr>
+        <tr><td></td><td></td><td></td></tr>
+    </table>
 
-	<button action="action" disabled>Reset</button>
+    <div class="btn"> <button action="action" disabled class="undo glyph" title="revert last turn"><span/></button> <button action="action" class="reset" disabled>Reset</button> </div>
 
-	<div class="res"></div>
+    <div class="res"></div>
 </div>
 
 <div class="footer"><span class="copy">by @<a href="https://t.me/serge_ttv">serge_ttv</a></span></div>
@@ -79,84 +87,102 @@ button { font-size: 125%; margin: 1ex auto; display: block; padding: 0.3ex 0.9ex
 <script>
 (function() 
 {
-	let it = 0;
+    let it = 0;
     const prev = [];
-	function click(e) 
-	{
-		if (it == -1)
-			reset();
+    function click(e) 
+    {
+        if (it == -1)
+            reset();
 
-		const tgt = e.target;
-		if (tgt.classList.contains('red') || tgt.classList.contains('green'))
-		    return;
-		
-		tgt.classList.add((++it) % 2 == 0 ? 'red' : 'green');
-		prev.push(tgt);
+        const tgt = e.target;
+        if (tgt.classList.contains('red') || tgt.classList.contains('green'))
+            return;
+        
+        tgt.classList.add((++it) % 2 == 0 ? 'red' : 'green');
+        prev.push(tgt);
 
-		if (prev.length > 6) 
-		{
-			prev[0].classList.remove('red', 'green', 'pale');
-			prev.shift();				
-		}
-		if (prev.length == 6) 
-			prev[0].classList.add('pale')
+        if (prev.length > 6) 
+        {
+            prev[0].classList.remove('red', 'green', 'pale');
+            prev.shift();                
+        }
+        if (prev.length == 6) 
+            prev[0].classList.add('pale')
 
-		btn().disabled = false;
+        btn('reset').disabled = false;
+        btn('undo').disabled = false;
 
-		testWin();
+        testWin();
     }
 
-	function testWin()
-	{
-		if (testSeq(document.querySelectorAll('.green')))
-			celebrate(`Green wins in ${Math.floor((it + 1) / 2)} turns!`);
-		if (testSeq(document.querySelectorAll('.red')))
-			celebrate(`Red wins in ${Math.floor((it + 1) / 2)} turns!`);
-	}
+    function testWin()
+    {
+        if (testSeq(document.querySelectorAll('.green')))
+            celebrate(`Green wins in ${Math.floor((it + 1) / 2)} turns!`);
+        if (testSeq(document.querySelectorAll('.red')))
+            celebrate(`Red wins in ${Math.floor((it + 1) / 2)} turns!`);
+    }
 
-	function celebrate(msg, sequence) 
-	{
-		it = -1;
-		const el = document.querySelector('.res');
-		el.innerHTML = msg;
-		el.style.display = 'block';
-	}
+    function celebrate(msg) 
+    {
+        it = -1;
+        const el = document.querySelector('.res');
+        el.innerHTML = msg;
+        el.style.display = 'block';
 
-	function testSeq(seq)
-	{		
-		if (!seq || seq.length != 3)
-			return false;
+        btn('undo').disabled = true;
+    }
 
-		const acc = { er: true, ec: true, pr: -1, pc: -1, sym: 0, asym: 0 };
-		const inv = Array.prototype.map.call(seq, e => {return {x: e.cellIndex, y: e.parentNode.rowIndex};})
-			.reduce((a, v) => { a.er &&= v.y == a.pr || a.pr == -1; a.pr = v.y; a.ec &&= v.x == a.pc || a.pc == -1; a.pc = v.x; a.sym += (v.x == v.y ? 1 : 0); a.asym += ((v.x + v.y) == 2 ? 1 : 0); return a;}, acc);
+    function testSeq(seq)
+    {        
+        if (!seq || seq.length != 3)
+            return false;
 
-		console.log('inv', inv);
+        const acc = { er: true, ec: true, pr: -1, pc: -1, sym: 0, asym: 0 };
+        const inv = Array.prototype.map.call(seq, e => {return {x: e.cellIndex, y: e.parentNode.rowIndex};})
+            .reduce((a, v) => { a.er &&= v.y == a.pr || a.pr == -1; a.pr = v.y; a.ec &&= v.x == a.pc || a.pc == -1; a.pc = v.x; a.sym += (v.x == v.y ? 1 : 0); a.asym += ((v.x + v.y) == 2 ? 1 : 0); return a;}, acc);
 
-		return inv.er || inv.ec || inv.sym == 3 || inv.asym == 3;
-	}
+        console.log('inv', inv);
+
+        return inv.er || inv.ec || inv.sym == 3 || inv.asym == 3;
+    }
 
 
-	function reset()
-	{
-		it = 0;
-		for (i = prev.length - 1; i >= 0; i--) 
-		{
-            prev[0].classList.remove('red', 'green', 'pale', 'win');
-			prev.shift();
-		}
+    function reset()
+    {
+        it = 0;
+        for (i = prev.length - 1; i >= 0; i--) 
+        {
+            prev[0].classList.remove('red', 'green', 'pale');
+            prev.shift();
+        }
 
-		btn().disabled = true;
-		document.querySelector('.res').style.display = 'none';
-	}
+        btn('reset').disabled = true;
+        btn('undo').disabled = true;
+        document.querySelector('.res').style.display = 'none';
+    }
 
-	function btn()
-	{
-		return document.querySelector('button');
-	}
+    function undo()
+    {
+        if (prev.length == 0 || it <= 0)
+            return;
+
+        prev[0].classList.remove('pale');
+        prev[prev.length - 1].classList.remove('red', 'green', 'pale');
+        prev.pop();
+        it--;
+
+        btn('undo').disabled = true; 
+    }
+
+    function btn(cls)
+    {
+        return document.querySelector('button.' + cls);
+    }
         
-	document.querySelector('table.fld').addEventListener('click', click);
-	btn().addEventListener('click', reset);
+    document.querySelector('table.fld').addEventListener('click', click);
+    btn('reset').addEventListener('click', reset);
+    btn('undo').addEventListener('click', undo);
 }) ();
 
 </script>
