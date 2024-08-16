@@ -20,7 +20,7 @@ html, body { height: 100%; margin: 0; }
     flex: 1;
 }
 
-body {font-family: arial, sans-serif;}
+body { font-family: arial, sans-serif; }
 .container { margin: 0 auto; }
 .content { margin: 1ex; }
 .footer { margin: .5ex 1ex; text-align: end; }
@@ -30,18 +30,29 @@ body {font-family: arial, sans-serif;}
 
 .fld td { width: 80px; height: 80px; border: 1px solid grey; cursor: pointer;}
 
-.fld td.red {background-color: #faa; }
-.fld td.green {background-color: #afa; }
-.fld td.pale {opacity: 0.45;}
+.fld td.red { background-color: #faa; }
+.fld td.green { background-color: #afa; }
+.fld td.pale { opacity: 0.45; }
+/*.fld td.win {outline: 3px solid coral; outline-offset: -1px; } */
 
-button { font-size: 125%; margin: 1ex auto; display: block; padding: 0.3ex 0.9ex;}
-.res {font-size: 150%; margin: 1.5ex auto; text-align: center; }
-.copy {font-size: 85%; }
+button { font-size: 125%; margin: 1ex auto; display: block; padding: 0.3ex 0.9ex; }
+.res { font-size: 150%; margin: 1.5ex auto; text-align: center; }
+.copy { font-size: 85%; }
 
 
 @media (width <= 480px) {
-  .container {width: 100%; }	
+  .container { width: 100%; }	
   .fld td { width: 33vw; height: 33vw; }
+}
+
+@media (prefers-color-scheme: dark) {
+  body { background-color: #222; color: #bbb; }
+  a { color: #227aec; }
+  .fld td { border-color: lightgrey; }
+  .fld td.red { background-color: #941f1f; }
+  .fld td.green { background-color: #0c890c; }
+  .fld td.pale { opacity: 0.4; }
+
 }
 
 </style>
@@ -98,12 +109,12 @@ button { font-size: 125%; margin: 1ex auto; display: block; padding: 0.3ex 0.9ex
 	function testWin()
 	{
 		if (testSeq(document.querySelectorAll('.green')))
-			celebrate('Green wins!');
+			celebrate(`Green wins in ${Math.floor((it + 1) / 2)} turns!`);
 		if (testSeq(document.querySelectorAll('.red')))
-			celebrate('Red wins!');
+			celebrate(`Red wins in ${Math.floor((it + 1) / 2)} turns!`);
 	}
 
-	function celebrate(msg) 
+	function celebrate(msg, sequence) 
 	{
 		it = -1;
 		const el = document.querySelector('.res');
@@ -131,7 +142,7 @@ button { font-size: 125%; margin: 1ex auto; display: block; padding: 0.3ex 0.9ex
 		it = 0;
 		for (i = prev.length - 1; i >= 0; i--) 
 		{
-            prev[0].classList.remove('red', 'green', 'pale');
+            prev[0].classList.remove('red', 'green', 'pale', 'win');
 			prev.shift();
 		}
 
