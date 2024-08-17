@@ -3,7 +3,6 @@
 <title>Modified tic-tac-toe</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='64px' height='64px' viewBox='0 0 63 63' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Crect fill='%23f88' stroke='%23444' x='2' y='2' width='20' height='20'/%3E%3Crect fill='%23eee' stroke='%23444' x='22' y='2' width='20' height='20'/%3E%3Crect fill='%238f8' stroke='%23444' x='42' y='2' width='20' height='20'/%3E%3Crect fill='%23eee' stroke='%23444' x='2' y='22' width='20' height='20'/%3E%3Crect fill='%238f8' stroke='%23444' x='22' y='22' width='20' height='20'/%3E%3Crect fill='%23f88' stroke='%23444' x='42' y='22' width='20' height='20'/%3E%3Crect fill='%238f8' stroke='%23444' x='2' y='42' width='20' height='20'/%3E%3Crect fill='%23eee' stroke='%23444' x='22' y='42' width='20' height='20'/%3E%3Crect fill='%23eee' stroke='%23444' x='42' y='42' width='20' height='20'/%3E%3C/svg%3E">
-    
 <style>
 html, body { height: 100%; margin: 0; } 
 .container {
@@ -44,7 +43,7 @@ button.glyph { vertical-align: bottom; padding: 0.28ex; }
 button.glyph.undo span { display: block; width: 24px; height: 24px; background-color: buttontext; mask: center no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath d='M18.885 3.515c-4.617-4.618-12.056-4.676-16.756-.195l-2.129-2.258v7.938h7.484l-2.066-2.191c2.82-2.706 7.297-2.676 10.073.1 4.341 4.341 1.737 12.291-5.491 12.291v4.8c3.708 0 6.614-1.244 8.885-3.515 4.686-4.686 4.686-12.284 0-16.97z'/%3E%3C/svg%3E"); }
 button.undo { margin-right: .75ex; }
 
-button.glyph:disabled span { background-color: rgba(16,16, 16, 0.3); }
+button.glyph:disabled span { background-color: rgba(16, 16, 16, 0.3); }
 
 .res { font-size: 150%; margin: 1.5ex auto; text-align: center; }
 .copy { font-size: 85%; }
@@ -62,7 +61,6 @@ button.glyph:disabled span { background-color: rgba(16,16, 16, 0.3); }
   .fld td.red { background-color: #941f1f; }
   .fld td.green { background-color: #0c890c; }
   .fld td.pale { opacity: 0.4; }
-
 }
 
 </style>
@@ -91,6 +89,7 @@ button.glyph:disabled span { background-color: rgba(16,16, 16, 0.3); }
 {
     let it = 0;
     const prev = [];
+    const hist = [];
     function click(e) 
     {
         if (it == -1)
@@ -106,7 +105,7 @@ button.glyph:disabled span { background-color: rgba(16,16, 16, 0.3); }
         if (prev.length > 6) 
         {
             prev[0].classList.remove('red', 'green', 'pale');
-            prev.shift();                
+            hist.push(prev.shift());
         }
         if (prev.length == 6) 
             prev[0].classList.add('pale')
@@ -149,7 +148,6 @@ button.glyph:disabled span { background-color: rgba(16,16, 16, 0.3); }
         return inv.er || inv.ec || inv.sym == 3 || inv.asym == 3;
     }
 
-
     function reset()
     {
         it = 0;
@@ -158,6 +156,8 @@ button.glyph:disabled span { background-color: rgba(16,16, 16, 0.3); }
             prev[0].classList.remove('red', 'green', 'pale');
             prev.shift();
         }
+
+        hist.splice(0, hist.length);
 
         btn('reset').disabled = true;
         btn('undo').disabled = true;
@@ -172,6 +172,10 @@ button.glyph:disabled span { background-color: rgba(16,16, 16, 0.3); }
         prev[0].classList.remove('pale');
         prev[prev.length - 1].classList.remove('red', 'green', 'pale');
         prev.pop();
+        if (hist.length > 0)
+            prev.unshift(hist.pop());
+        if (prev.length == 6)
+            prev[0].classList.add('pale', it % 2 == 1 ? 'green' : 'red');
         it--;
 
         btn('undo').disabled = true; 
