@@ -48,11 +48,11 @@ button.glyph:disabled span { background-color: rgba(16, 16, 16, 0.3); }
 .res { font-size: 150%; margin: 1.5ex auto; text-align: center; }
 .copy { font-size: 85%; }
 
-.res { animation-duration: 1500ms; animation-name: bounce; }
-@keyframes bounce {
+.res { animation-duration: 1200ms; animation-name: bounce; display: none; }
+@keyframes bounce {                                                                           
   from {
     translate: 0 0;
-    scale: 100% 1;
+    scale: 1 1;
   }
 
   20%, 75% {
@@ -67,9 +67,10 @@ button.glyph:disabled span { background-color: rgba(16, 16, 16, 0.3); }
 
   to {
     translate: 0 0;
-    scale: 100% 1;
+    scale: 1 1;
   }
-}    
+}
+
 
 @media (width <= 480px) {
   .container { width: 100%; }    
@@ -150,7 +151,7 @@ button.glyph:disabled span { background-color: rgba(16, 16, 16, 0.3); }
     {
         it = -1;
         const el = document.querySelector('.res');
-        el.innerHTML = msg;
+        el.textContent = msg;
         el.style.display = 'block';
 
         btn('undo').disabled = true;
@@ -165,7 +166,7 @@ button.glyph:disabled span { background-color: rgba(16, 16, 16, 0.3); }
         const inv = Array.prototype.map.call(seq, e => {return {x: e.cellIndex, y: e.parentNode.rowIndex};})
             .reduce((a, v) => { a.er &&= v.y == a.pr || a.pr == -1; a.pr = v.y; a.ec &&= v.x == a.pc || a.pc == -1; a.pc = v.x; a.sym += (v.x == v.y ? 1 : 0); a.asym += ((v.x + v.y) == 2 ? 1 : 0); return a;}, acc);
 
-        console.log('inv', inv);
+//        console.log('inv', inv);
 
         return inv.er || inv.ec || inv.sym == 3 || inv.asym == 3;
     }
@@ -179,7 +180,7 @@ button.glyph:disabled span { background-color: rgba(16, 16, 16, 0.3); }
             prev.shift();
         }
 
-        hist.splice(0, hist.length);
+	hist.splice(0, hist.length);
 
         btn('reset').disabled = true;
         btn('undo').disabled = true;
