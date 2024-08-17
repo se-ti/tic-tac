@@ -48,6 +48,28 @@ button.glyph:disabled span { background-color: rgba(16, 16, 16, 0.3); }
 .res { font-size: 150%; margin: 1.5ex auto; text-align: center; }
 .copy { font-size: 85%; }
 
+.res { animation-duration: 1500ms; animation-name: bounce; }
+@keyframes bounce {
+  from {
+    translate: 0 0;
+    scale: 100% 1;
+  }
+
+  20%, 75% {
+    translate: 0 -16.6ex;
+    scale: 120% 120%;
+  }
+
+  50% {
+    translate: 0 -16.6ex;
+    scale: 110% 1;
+  }
+
+  to {
+    translate: 0 0;
+    scale: 100% 1;
+  }
+}    
 
 @media (width <= 480px) {
   .container { width: 100%; }    
